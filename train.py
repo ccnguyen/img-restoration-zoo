@@ -20,7 +20,6 @@ import summary_utils
 import dataloading
 
 utils.seed(1234)
-torch.set_num_threads(2)
 
 
 def main(args):
@@ -29,7 +28,7 @@ def main(args):
     args, exp_name = utils.modify_args(args)
     model = models.define_decoder(args.decoder, args)
 
-    model_dir, version_num = utils.make_model_dir(exp_name, args.restart)
+    model_dir, version_num = utils.make_model_dir(exp_name)
     model.cuda()
 
     summaries_dir, checkpoints_dir = utils.make_subdirs(model_dir)
@@ -84,7 +83,7 @@ def main(args):
                     torch.save(model.state_dict(),
                                os.path.join(checkpoints_dir, 'model_current.pth'))
                     writer.add_scalar("total_train_loss", train_loss, total_steps)
-                    summary_fn(model, gt, restored, total_steps, optim)
+                    summary_fn(gt, restored, total_steps, optim)
                     tqdm.write("Epoch %d, Total loss %0.6f, "
                                "iteration time %0.6f, total time %0.6f" % (
                                    epoch, train_loss, time.time() - start_time,
@@ -142,29 +141,21 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--data_root',
                         type=str,
-                        default='/home/custom_data')
+                        default='/home/cindy/PycharmProjects/custom_data')
     parser.add_argument('--log_root',
                         type=str,
-                        default='/home/img-restoration-zoo/logs')
+                        default='/home/cindy/PycharmProjects/img-restoration-zoo/logs')
     parser.add_argument('--test', action='store_true',
-                        help='dummy experiment name for just testing code')
+                        help='dummy experiment name for just testing code, use to test pipes')
     parser.add_argument('-ds', '--dataset', help='dataset', type=str, choices=['gopro', 'nfs'], default='nfs')
     parser.add_argument('-b', '--block_size',
                         help='delimited list input for block size',
                         default='8, 512, 512')
-    parser.add_argument('-z', '--sig_read',
-                        type=float,
-                        default=0.001,
-                        help='noise variance level')
-    parser.add_argument('-p', '--sig_shot',
-                        help='peak of poisson noise distribution',
-                        type=float,
-                        default=20000)
     parser.add_argument('--resume',
                         type=str,
                         default='00-00',
                         help='date of folder of exp to resume')
-    parser.add_argument('--remote', action='store_true')
+    parser.add_argument('--local', action='store_true')
     parser.add_argument('--sched', type=str, help='schedule', default='no_sched')
 
     parser.add_argument('--max_epochs', type=int, default=5000)

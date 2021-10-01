@@ -2,6 +2,7 @@ import datetime
 from functools import partial
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 import os
 import pandas as pd
@@ -21,12 +22,6 @@ def seed(num):
     np.random.seed(num)
     torch.manual_seed(num)
     torch.cuda.manual_seed_all(num)
-
-
-def assign_p():
-    p = psutil.Process()
-    cores = [i for i in range(27)]
-    p.cpu_affinity(cores)
 
 
 def modify_args(args):
@@ -99,19 +94,31 @@ def define_loss(args):
         loss_fn = partial(l1_loss)
     return loss_fn
 
-def make_model_dir(exp_name, restart=False):
+def make_model_dir(exp_name):
     version_num = find_version_number(exp_name)
     model_dir = f'{exp_name}/v_{version_num}'
-    if restart:
-        model_dir = f'{exp_name}/v_{version_num-1}'
-        # remove the current dir and make a new one
-        if os.path.exists(model_dir):
-            os.remove(model_dir)
     print(model_dir)
 
     os.makedirs(model_dir, exist_ok=True)
     return model_dir, version_num
 
+
+
+def save_img(img, count, curr_dir, display=False):
+    if display:
+        plt.figure()
+        plt.imshow(convert(img, dim=1), interpolation='nearest', cmap='gray')
+        plt.xticks([])
+        plt.yticks([])
+        sns.despine(left=True, bottom=True, right=True)
+        plt.savefig(f'{curr_dir}/{count}.png', bbox_inches='tight', pad_inches=0)
+        plt.close()
+    else:
+
+        out = img.squeeze(0)
+        out = out.permute(1, 2, 0)
+        out = out.cpu().detach().numpy()
+        imageio.imsave(f'{curr_dir}/{count}.png', (out * 255.0).astype(np.uint8))
 
 
 def get_date(date_resume):

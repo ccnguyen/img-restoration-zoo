@@ -11,7 +11,7 @@ REMOTE_CUSTOM_PATH = '/media/data6/cindy/custom_data'
 LOCAL_CUSTOM_PATH = '/home/cindy/PycharmProjects/custom_data'
 
 
-def loadTrainingDataset(args, color=False, input_avg=False):
+def loadTrainingDataset(args, color=False):
     if args.remote:
         args.data_root = f'{REMOTE_CUSTOM_PATH}/{args.dataset}_block_rgb_{args.block_size[-1]}_8f'
     else:
@@ -21,15 +21,11 @@ def loadTrainingDataset(args, color=False, input_avg=False):
     if args.dataset == 'gopro':
         train_dataset = GoPro_Video(log_root=args.data_root,
                                     block_size=args.block_size,
-                                    gt_index=args.gt,
-                                    input_avg=input_avg,
                                     color=color,
                                     split=split)
     else:
         train_dataset = NFS_Video(log_root=args.data_root,
                                             block_size=args.block_size,
-                                            gt_index=args.gt,
-                                            input_avg=input_avg,
                                             color=color,
                                             split=split)
 
@@ -40,7 +36,7 @@ def loadTrainingDataset(args, color=False, input_avg=False):
                       pin_memory=True)
 
 
-def loadValDataset(args, input_avg=False, color=False):
+def loadValDataset(args, color=False):
     if args.remote:
         args.data_root = f'{REMOTE_CUSTOM_PATH}/{args.dataset}_block_rgb_{args.block_size[-1]}_8f'
     else:
@@ -52,14 +48,11 @@ def loadValDataset(args, input_avg=False, color=False):
         val_dataset = GoPro_Video(log_root=args.data_root,
                                   gt_index=args.gt,
                                   block_size=args.block_size,
-                                  input_avg=input_avg,
                                   split=split,
                                   color=color)
     else:
         val_dataset = NFS_Video(log_root=args.data_root,
                         block_size=args.block_size,
-                        gt_index=args.gt,
-                        input_avg=input_avg,
                         color=color,
                         split=split)
 

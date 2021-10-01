@@ -1,5 +1,5 @@
 '''
-High level networks
+High level nets
 '''
 import torch.nn as nn
 import torch.nn.functional as F
@@ -11,8 +11,8 @@ import nets.utils
 
 class UNet(nn.Module):
     def __init__(self,
-                 in_channels=1,
-                 out_channels=1,
+                 in_ch=1,
+                 out_ch=1,
                  depth=3,
                  wf=3,
                  padding=True,
@@ -22,7 +22,7 @@ class UNet(nn.Module):
         super().__init__()
         assert up_mode in ('upconv', 'upsample')
 
-        prev_channels = in_channels
+        prev_channels = in_ch
 
         self.encoders = nn.ModuleList()
         for i in range(depth):
@@ -33,7 +33,7 @@ class UNet(nn.Module):
         for i in reversed(range(depth - 1)):
             self.decoders.append(blocks.UpBlock(prev_channels, 2 ** (wf + i), up_mode, padding, batch_norm))
             prev_channels = 2 ** (wf + i)
-        self.final_conv = nn.Conv2d(prev_channels, out_channels, kernel_size=1)
+        self.final_conv = nn.Conv2d(prev_channels, out_ch, kernel_size=1)
         self.final_activation = final_activation
         self.activation_fn = nn.Tanh()
         self.clamp = nets.utils.clamp_class.apply

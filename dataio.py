@@ -9,43 +9,30 @@ def torch_rgb2gray(vid):
     return torch.sum(vid, dim=1)
 
 
-def is_img_file(fname):
-    return any(fname.endswith(extension) for extension in ['jpeg', 'JPEG', 'jpg', 'png', 'JPG', 'PNG', 'gif'])
-
-
 class GoPro_Video(Dataset):
     def __init__(self,
-                 log_root='/home/custom_data/gopro_block_rgb_512_8f',
+                 log_root='/home/cindy/PycharmProjects/custom_data/gopro_block_rgb_512_8f',
                  block_size=[8, 512, 512],
-                 gt_index=4, noise_var=0.0,
+                 gt_index=4,
                  split='train',
                  color=False):
-        '''
-        3 x 1280 x 720 pixels originally
-        init blocks will make it 512 x 512
-        '''
         super().__init__()
 
         self.log_root = log_root
         self.block_size = block_size
         self.split = split
-        self.noise_sigma = noise_var
         self.gt_index = gt_index
         self.color = color
 
         # load video block names
         print('creating list of video blocks')
         self.video_blocks = []
-        print(self.log_root)
         if self.split == 'test' or self.split == 'val':
             fname = 'blocks_per_vid5.pt'
         else:
             fname = 'blocks_per_vid30.pt'
 
         fpath = f'{self.log_root}/{self.split}/{fname}'
-        if self.split == 'sample':
-            fpath = f'/home/coded-deblur/blocks_per_vid1.pt'
-
 
         self.vid_dict = torch.load(fpath)
 
@@ -56,7 +43,6 @@ class GoPro_Video(Dataset):
         print(f'loaded {self.num_clips_total} clips from {self.num_vids} videos')
 
     def __len__(self):
-
         return self.num_clips_total
 
     def __getitem__(self, idx):
@@ -80,17 +66,16 @@ class GoPro_Video(Dataset):
             # avg [1,h,w]
             # vid [8, h,w], you can pass a video too
             # gt  [1, h,w]
-
         return avg, gt
 
 
 
 class NFS_Video(Dataset):
     def __init__(self,
-                 log_root='/home/custom_data/nfs_block_rgb_512_8f',
+                 log_root='/home/cindy/PycharmProjects/custom_data/nfs_block_rgb_512_8f',
                  block_size=[8, 512, 512],
-                 gt_index=4, noise_var=0.0,
-                 input_avg=False, split='train',
+                 gt_index=4,
+                 split='train',
                  color=False):
         '''
         3 x 1280 x 720 pixels originally
@@ -101,18 +86,13 @@ class NFS_Video(Dataset):
         self.log_root = log_root
         self.block_size = block_size
         self.split = split
-        self.noise_sigma = noise_var
-        self.input_avg = input_avg
         self.gt_index = gt_index
         self.color = color
 
         # load video block names
         print('creating list of video blocks')
         self.video_blocks = []
-        print(self.log_root)
-        fname = 'test_local.pt'
-        # fname = 'final_local.pt'
-        fname = 'final_local_crop_filter.pt'
+        fname = 'filter.pt'
 
         fpath = f'{self.log_root}/{self.split}/{fname}'
         if self.split == 'sample':
@@ -146,7 +126,6 @@ class NFS_Video(Dataset):
         self.vid_mapping = vid_mapping
 
     def __len__(self):
-
         return self.num_clips_total
 
     def __getitem__(self, idx):

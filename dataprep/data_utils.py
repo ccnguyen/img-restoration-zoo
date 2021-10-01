@@ -7,10 +7,8 @@ import os
 import random
 import matplotlib.pyplot as plt
 import pandas as pd
-from skimage.transform import rescale, resize
 
 random.seed(1234)
-
 
 def crop_center(img, size_x, size_y):
     _, y, x = img.shape
@@ -92,27 +90,6 @@ def create_nfs_seq_from_annotation(fpath, block_size, df):
             img = skimage.io.imread(f'{fpath}/{all_frames[start_idx + j]}')
             video_seq.append(img)
     return video_seq
-
-
-def create_iphone_seq(fpath, block_size, num_vids=None):
-    all_frames = sorted(os.listdir(fpath))
-    num_frames_to_use = np.minimum(len(all_frames), 400)
-    num_avail_frames = len(all_frames)
-
-    if num_vids is None:
-        num_vids = num_frames_to_use // block_size[0]
-    start_idxs = []
-
-    video_seq = []
-    for i in range(num_vids):
-        # random determine where to start the video
-        start_idx = random.randint(0, num_avail_frames - block_size[0])
-        start_idxs.append(start_idx)
-        for j in range(block_size[0]):
-            img = skimage.io.imread(f'{fpath}/{all_frames[start_idx + j]}')
-            img = resize(img, (img.shape[0] // 2, img.shape[1] // 2), anti_aliasing=True)
-            video_seq.append(img)
-    return video_seq, num_vids, start_idxs
 
 
 def annotate_nfs(video_seq, subject=None, start_idxs=None):

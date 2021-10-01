@@ -1,4 +1,4 @@
-name: dl
+name: model_zoo
 channels:
   - pytorch
   - conda-forge

@@ -1,5 +1,7 @@
+import os
+import sys
 from argparse import ArgumentParser
-import sys, os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dataprep.data_utils import *
 
@@ -35,7 +37,6 @@ def gopro_init(log_root, block_size, data_root, split, num_blocks_per_video):
         video = convert_gopro_seq(video_seq, block_size, crop=True)
         print(f'Created video for {subfolder_num}, size={video.shape}')
         # create and save video blocks
-
         vid_dict = save_vid_dict(video, num_items_per_video=num_blocks_per_video)
         save_dict[subfolder_num] = vid_dict
         subfolder_num += 1
@@ -76,8 +77,7 @@ def nfs_init(log_root, block_size, data_root, split):
 
     os.makedirs(save_dir, exist_ok=True)
 
-    df = pd.read_csv('nfs_crop_idx_filtered - nfs_crop_idx_filtered.csv')
-    # df = pd.read_csv('nfs_crop_idx_filtered.csv')
+    df = pd.read_csv('nfs_crop_idx.csv')
     save_dict = {}
     subfolder_num = 0
     for i, fpath in enumerate(subject_folders):
@@ -98,7 +98,7 @@ def nfs_init(log_root, block_size, data_root, split):
             vid_dict = save_vid_dict(video, num_items_per_video=num_vids, num_frames=block_size[0])
             save_dict[subfolder_num] = vid_dict
             subfolder_num += 1
-    torch.save(save_dict, f'{save_dir}/final_local_crop_filter.pt')
+    torch.save(save_dict, f'{save_dir}/filter.pt')
 
 
 if __name__ == '__main__':
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-l', '--list', help='delimited list input', type=str, default='8,512,512')
     parser.add_argument('--remote', action='store_true')
-    parser.add_argument('--dataset', type=str, choices=['nfs', 'gopro', 'iphone'], default='nfs')
+    parser.add_argument('--dataset', type=str, choices=['nfs', 'gopro'], default='nfs')
 
     args = parser.parse_args()
 
@@ -133,6 +133,8 @@ if __name__ == '__main__':
                    split='test',
                    num_blocks_per_video=5)
     elif args.dataset == 'nfs':
+
+        ''' Uncomment to annotate and select where to crop frames'''
         # nfs_annotate(log_root, block_size, data_root, split)
         nfs_init(log_root=log_root,
                  block_size=block_size,

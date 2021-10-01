@@ -2,7 +2,7 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from nets.nets import UNet
+from nets.unet import UNet
 from nets.mprnet import MPRNet_s2
 from nets.hinet import HINet
 from nets.dncnn import DnCNN, init_weights
@@ -25,7 +25,7 @@ def define_decoder(model_name, args):
                        se_layer=False, in_chans=in_ch, out_chans=1)
 	if model_name == 'unet':
 		return UNet(in_ch, out_ch=1, depth=6,
-                        growth=5,
+                        wf=5,
                         padding=True,
                         batch_norm=False)
 	if model_name == 'mpr':
@@ -45,4 +45,4 @@ def define_decoder(model_name, args):
                      init_type='orthogonal',
                      init_bn_type='uniform',
                      gain=0.2)
-        return model
+		return model

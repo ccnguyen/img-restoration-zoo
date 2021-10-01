@@ -238,7 +238,7 @@ class PixelUnShuffle(nn.Module):
         return pixel_unshuffle(input, self.downscale_factor)
 
 # ----------------------------------------
-#         Initialize the networks
+#         Initialize the nets
 # ----------------------------------------
 def weights_init(net, init_type = 'normal', init_gain = 0.02):
     """Initialize network weights.

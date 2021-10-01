@@ -6,6 +6,17 @@ Hopefully, it can be of use to anyone needing to run baselines on deblurring, de
 
 This repo is set up to use the 240fps video data from GoPro or Need for Speed (NFS).
 
+The following models are implemented:
+- U-Net
+- MPRNet
+- HINet
+- DnCNN
+- SGN
+- Uformer 
+- DRN
+- BANet
+- MSRN
+
 ### Network modifications
 - A lot of networks have been modified so they can take a variable number of input channels `in_ch`.
 - The output is often differentiably clamped between [0, 1] to help with training. 
